@@ -1,4 +1,9 @@
 import { useState, useMemo } from 'react'
+import AttendanceHeader from '../components/Attendance/AttendanceHeader'
+import AttendanceControls from '../components/Attendance/AttendanceControls'
+import AttendanceStats from '../components/Attendance/AttendanceStats'
+import AttendanceTable from '../components/Attendance/AttendanceTable'
+import AttendanceLegend from '../components/Attendance/AttendanceLegend'
 
 export default function Attendance() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -160,251 +165,35 @@ export default function Attendance() {
           Attendance Tracker
         </h2>
 
-        {/* User Information Header */}
-        <div className="bg-blue-50 rounded-lg p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <span className="text-blue-600 font-medium">Full Name:</span>
-              <p className="text-gray-800 font-semibold">{userData.fullName}</p>
-            </div>
-            <div>
-              <span className="text-blue-600 font-medium">ID Number:</span>
-              <p className="text-gray-800 font-semibold">{userData.idNumber}</p>
-            </div>
-            <div>
-              <span className="text-blue-600 font-medium">Campaign Name:</span>
-              <p className="text-gray-800 font-semibold">{userData.campaignName}</p>
-            </div>
-            <div>
-              <span className="text-blue-600 font-medium">Supervisor Name:</span>
-              <p className="text-gray-800 font-semibold">{userData.supName}</p>
-            </div>
-          </div>
-        </div>
+        <AttendanceHeader userData={userData} />
 
-        {/* Date Selection and Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">Year:</label>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                {years.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
+        <AttendanceControls
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          selectedMonth={selectedMonth}
+          setSelectedMonth={setSelectedMonth}
+          highlightsEnabled={highlightsEnabled}
+          setHighlightsEnabled={setHighlightsEnabled}
+          years={years}
+          months={months}
+        />
 
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">Month:</label>
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                {months.map((month, index) => (
-                  <option key={index} value={index}>{month}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+        <AttendanceStats stats={stats} />
 
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">Highlights:</label>
-            <button
-              onClick={() => setHighlightsEnabled(!highlightsEnabled)}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                highlightsEnabled 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-gray-300 text-gray-700'
-              }`}
-            >
-              {highlightsEnabled ? 'ON' : 'OFF'}
-            </button>
-          </div>
-        </div>
+        <AttendanceTable
+          daysInMonth={daysInMonth}
+          sampleAttendanceData={sampleAttendanceData}
+          scheduleData={scheduleData}
+          highlightsEnabled={highlightsEnabled}
+          calculateTimeDifference={calculateTimeDifference}
+          formatTime={formatTime}
+          isLate={isLate}
+          isBreakLate={isBreakLate}
+          calculateAdherence={calculateAdherence}
+          getAdherenceColor={getAdherenceColor}
+        />
 
-        {/* Statistics Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
-          <div className="bg-blue-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalWorkDays}</div>
-            <div className="text-sm text-blue-800">Work Days</div>
-          </div>
-          <div className="bg-green-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.attendedDays}</div>
-            <div className="text-sm text-green-800">Attended</div>
-          </div>
-          <div className="bg-red-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-red-600">{stats.absentDays}</div>
-            <div className="text-sm text-red-800">Absent</div>
-          </div>
-          <div className="bg-yellow-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-yellow-600">{stats.lateDays}</div>
-            <div className="text-sm text-yellow-800">Late Days</div>
-          </div>
-          <div className="bg-purple-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-purple-600">{stats.attendanceRate}%</div>
-            <div className="text-sm text-purple-800">Attendance</div>
-          </div>
-          <div className="bg-indigo-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-indigo-600">{stats.punctualityRate}%</div>
-            <div className="text-sm text-indigo-800">Punctuality</div>
-          </div>
-          <div className="bg-teal-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-teal-600">{stats.totalWorkedHours}</div>
-            <div className="text-sm text-teal-800">Hours Worked</div>
-          </div>
-          <div className="bg-orange-100 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-orange-600">{stats.hoursAdherence}%</div>
-            <div className="text-sm text-orange-800">Hours Adherence</div>
-          </div>
-        </div>
-
-        {/* Attendance Table */}
-        <div className="overflow-x-auto">
-          <div className="min-w-full">
-            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
-              {/* Header Row */}
-              <div className="grid grid-cols-16 bg-gray-100 border-b border-gray-300 text-xs">
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">Day</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">Month Day#</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">LOGIN</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">LOG OUT</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">TIME</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">BREAK1 OUT</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">BREAK1 IN</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">TIME</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">BREAK2 OUT</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">BREAK2 IN</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">TIME</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">LUNCH OUT</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">LUNCH IN</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider border-r border-gray-300">TIME</div>
-                <div className="px-2 py-3 text-left font-medium text-gray-700 uppercase tracking-wider">ADHERENCE</div>
-              </div>
-
-              {/* Data Rows */}
-              {daysInMonth.map((dayInfo, index) => {
-                const dayData = sampleAttendanceData[dayInfo.monthDay]
-                const schedule = scheduleData[dayInfo.day]
-                const isOff = schedule?.loginTime === 'OFF'
-                const adherence = calculateAdherence(dayData, dayInfo.day)
-
-                // Calculate times
-                const totalTime = dayData?.login && dayData?.logout 
-                  ? formatTime(calculateTimeDifference(dayData.login, dayData.logout))
-                  : (isOff ? 'OFF' : 'NO SHOW')
-
-                const break1Time = dayData?.break1Out && dayData?.break1In
-                  ? formatTime(calculateTimeDifference(dayData.break1Out, dayData.break1In))
-                  : (isOff ? 'OFF' : '-')
-
-                const break2Time = dayData?.break2Out && dayData?.break2In
-                  ? formatTime(calculateTimeDifference(dayData.break2Out, dayData.break2In))
-                  : (isOff ? 'OFF' : '-')
-
-                const lunchTime = dayData?.lunchOut && dayData?.lunchIn
-                  ? formatTime(calculateTimeDifference(dayData.lunchOut, dayData.lunchIn))
-                  : (isOff ? 'OFF' : '-')
-
-                // Determine highlighting classes
-                const getHighlightClass = (condition, colorClass) => {
-                  return highlightsEnabled && condition ? colorClass : ''
-                }
-
-                const loginHighlight = getHighlightClass(
-                  dayData?.login && isLate(dayData.login, schedule?.loginTime),
-                  'bg-red-100'
-                )
-
-                const break1Highlight = getHighlightClass(
-                  dayData?.break1Out && dayData?.break1In && isBreakLate(dayData.break1Out, dayData.break1In, schedule?.break1),
-                  'bg-yellow-100'
-                )
-
-                const break2Highlight = getHighlightClass(
-                  dayData?.break2Out && dayData?.break2In && isBreakLate(dayData.break2Out, dayData.break2In, schedule?.break2),
-                  'bg-yellow-100'
-                )
-
-                const lunchHighlight = getHighlightClass(
-                  dayData?.lunchOut && dayData?.lunchIn && isBreakLate(dayData.lunchOut, dayData.lunchIn, schedule?.lunch),
-                  'bg-yellow-100'
-                )
-
-                const adherenceHighlight = getHighlightClass(
-                  adherence !== 'OFF' && adherence !== 'NO SHOW' && parseInt(adherence) >= 95,
-                  'bg-green-100'
-                )
-
-                return (
-                  <div key={dayInfo.monthDay} className={`grid grid-cols-16 text-xs ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-200 hover:bg-blue-50 transition-colors`}>
-                    <div className="px-2 py-3 font-medium text-gray-900 border-r border-gray-200">{dayInfo.day}</div>
-                    <div className="px-2 py-3 text-gray-900 border-r border-gray-200">{dayInfo.monthDay}</div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${loginHighlight}`}>
-                      {dayData?.login || (isOff ? 'OFF' : 'NO SHOW')}
-                    </div>
-                    <div className="px-2 py-3 text-gray-900 border-r border-gray-200">
-                      {dayData?.logout || (isOff ? 'OFF' : 'NO SHOW')}
-                    </div>
-                    <div className="px-2 py-3 text-gray-900 border-r border-gray-200">{totalTime}</div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break1Highlight}`}>
-                      {dayData?.break1Out || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break1Highlight}`}>
-                      {dayData?.break1In || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break1Highlight}`}>{break1Time}</div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break2Highlight}`}>
-                      {dayData?.break2Out || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break2Highlight}`}>
-                      {dayData?.break2In || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${break2Highlight}`}>{break2Time}</div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${lunchHighlight}`}>
-                      {dayData?.lunchOut || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${lunchHighlight}`}>
-                      {dayData?.lunchIn || (isOff ? 'OFF' : '-')}
-                    </div>
-                    <div className={`px-2 py-3 text-gray-900 border-r border-gray-200 ${lunchHighlight}`}>{lunchTime}</div>
-                    <div className={`px-2 py-3 border-r border-gray-200 ${adherenceHighlight} ${getAdherenceColor(adherence)}`}>
-                      {adherence}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-800 mb-3">Color Legend:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-red-100 border border-red-200 rounded"></div>
-              <span className="text-gray-700">Late Login (Red)</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-yellow-100 border border-yellow-200 rounded"></div>
-              <span className="text-gray-700">Extended Break/Lunch (Yellow)</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-green-100 border border-green-200 rounded"></div>
-              <span className="text-gray-700">Good Adherence 95%+ (Green)</span>
-            </div>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            <p>• Data can be modified by administrators</p>
-            <p>• Times are synchronized with Schedule Tracker and Punch In data</p>
-            <p>• Adherence is calculated based on scheduled vs actual hours worked</p>
-          </div>
-        </div>
+        <AttendanceLegend />
       </div>
     </div>
   )
