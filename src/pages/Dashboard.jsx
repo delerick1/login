@@ -5,6 +5,8 @@ import Sidebar from '../components/shared/Sidebar'
 import PunchIn from './PunchIn'
 import ScheduleTracker from './ScheduleTracker'
 import Attendance from './Attendance'
+import UserAdmin from './UserAdmin'
+import CampaignAdmin from './CampaignAdmin'
 import Header from '../components/shared/Header'
 
 
@@ -26,6 +28,10 @@ export default function Dashboard() {
         return <ScheduleTracker />
       case 'attendance':
         return <Attendance />
+      case 'user-admin':
+        return <UserAdmin />
+      case 'campaign-admin':
+        return <CampaignAdmin />
       default:
         return <PunchIn />
     }
