@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import '../styles/punch-in.css'
 import TimeClock from '../components/PunchIn/TimeClock'
 import PunchSelector from '../components/PunchIn/PunchSelector'
 import RecentPunches from '../components/PunchIn/RecentPunches'
@@ -120,20 +121,23 @@ export default function PunchIn() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg shadow-md p-8">
-       
-        <TimeClock formatTime={formatTime}
-         formatDate={formatDate} 
-         currentTime={currentTime} />
-
+    <div className="punch-container">
+      <div className="punch-header">
+        <TimeClock 
+          formatTime={formatTime}
+          formatDate={formatDate} 
+          currentTime={currentTime} 
+        />
+        
         <PunchSelector 
           selectedPunchType={selectedPunchType} 
           punchTypes={punchTypes}
           handlePunch={handlePunch}
           setSelectedPunchType={setSelectedPunchType}
         />
+      </div>
 
+      <div className="punch-main">
         <RecentPunches punchHistory={punchHistory} formatTime={formatTime} />
 
         <PunchSummary

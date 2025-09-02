@@ -8,50 +8,64 @@ export default function PunchSummary({
   getTotalHours,
   getBreakStatus
 }) {
+  const formatTimeShort = (timeStr) => {
+    if (timeStr === '--:--') return '--:--'
+    // Convert from full format to short format
+    const match = timeStr.match(/(\d{1,2}):(\d{2}):(\d{2}) (AM|PM)/)
+    if (match) {
+      return `${match[1]}:${match[2]} ${match[4]}`
+    }
+    return timeStr
+  }
+
   return (
-    <div className="p-4 bg-blue-50 rounded-lg">
-      <h3 className="font-semibold text-blue-800 mb-4">Today's Summary</h3>
+    <div className="punch-summary">
+      <h3>Today's Summary</h3>
       
-      {/* Basic Info */}
-      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-        <div>
-          <span className="text-blue-600">First Punch IN:</span>
-          <p className="font-medium">{getFirstPunchIn()}</p>
-        </div>
-        <div>
-          <span className="text-blue-600">Last Punch OUT:</span>
-          <p className="font-medium">{getLastPunchOut()}</p>
-        </div>
-        <div className="col-span-2">
-          <span className="text-blue-600">Total Hours:</span>
-          <p className="font-medium">{getTotalHours()}</p>
-          {adminHourLimit && (
-            <p className="text-xs text-blue-500">Limit: {adminHourLimit} hours</p>
-          )}
-        </div>
+      <div className="punch-summary-line">
+        <div className="punch-summary-small">First Punch IN:</div>
+        <div className="punch-summary-big">{formatTimeShort(getFirstPunchIn())}</div>
       </div>
 
-      {/* Break Details */}
-      <div className="space-y-2 text-sm">
-        <div>
-          <span className="text-blue-600">Break 1:</span>
-          <p className="font-medium text-xs">{getBreakStatus('BREAK 1')}</p>
+      <div className="punch-summary-line">
+        <div className="punch-summary-small">Last Punch OUT:</div>
+        <div className="punch-summary-big">{formatTimeShort(getLastPunchOut())}</div>
+      </div>
+
+      <div className="punch-summary-line">
+        <div className="punch-summary-small">Total Hours:</div>
+        <div className="punch-summary-big">{getTotalHours()}</div>
+      </div>
+
+      {adminHourLimit && (
+        <div className="punch-limit">
+          <div className="punch-summary-small">Limit:</div>
+          <div className="punch-summary-big">{adminHourLimit} hours</div>
         </div>
-        <div>
-          <span className="text-blue-600">Break 2:</span>
-          <p className="font-medium text-xs">{getBreakStatus('BREAK 2')}</p>
+      )}
+
+      <hr className="punch-divider" />
+
+      <div className="punch-breaks-grid">
+        <div className="punch-break-line">
+          <div className="punch-summary-small">Break 1:</div>
+          <div className="punch-summary-big">{getBreakStatus('BREAK 1')}</div>
         </div>
-        <div>
-          <span className="text-blue-600">Lunch:</span>
-          <p className="font-medium text-xs">{getBreakStatus('LUNCH')}</p>
+        <div className="punch-break-line">
+          <div className="punch-summary-small">Break 2:</div>
+          <div className="punch-summary-big">{getBreakStatus('BREAK 2')}</div>
         </div>
-        <div>
-          <span className="text-blue-600">Training:</span>
-          <p className="font-medium text-xs">{getBreakStatus('TRAINING')}</p>
+        <div className="punch-break-line">
+          <div className="punch-summary-small">Lunch:</div>
+          <div className="punch-summary-big">{getBreakStatus('LUNCH')}</div>
         </div>
-        <div>
-          <span className="text-blue-600">Technical:</span>
-          <p className="font-medium text-xs">{getBreakStatus('TECHNICAL')}</p>
+        <div className="punch-break-line">
+          <div className="punch-summary-small">Training:</div>
+          <div className="punch-summary-big">{getBreakStatus('TRAINING')}</div>
+        </div>
+        <div className="punch-break-line">
+          <div className="punch-summary-small">Technical:</div>
+          <div className="punch-summary-big">{getBreakStatus('TECHNICAL')}</div>
         </div>
       </div>
     </div>

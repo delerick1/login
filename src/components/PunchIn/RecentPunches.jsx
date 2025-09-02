@@ -1,18 +1,58 @@
-
 export default function RecentPunches({ punchHistory, formatTime }) {
   if (punchHistory.length === 0) return null
 
+  const formatTimeShort = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
+  const getHumanType = (type) => {
+    switch(type) {
+      case 'IN': return 'IN'
+      case 'OUT': return 'OUT'
+      case 'BREAK 1': return 'Break 1'
+      case 'BREAK 2': return 'Break 2'
+      case 'LUNCH': return 'Lunch'
+      case 'TRAINING': return 'Training'
+      case 'TECHNICAL': return 'Technical'
+      default: return type
+    }
+  }
+
   return (
-    <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-      <h3 className="font-semibold text-gray-800 mb-2">Recent Punches</h3>
-      <div className="space-y-1 max-h-32 overflow-y-auto">
-        {punchHistory.slice(-5).reverse().map(punch => (
-          <div key={punch.id} className="flex justify-between text-sm">
-            <span className="font-medium">{punch.type}</span>
-            <span className="text-gray-600">{formatTime(punch.time)}</span>
-          </div>
-        ))}
+    <div className="punch-sheet">
+      <div className="punch-sheet-header">
+        <div className="punch-sheet-title">Punch Log</div>
+        <div className="punch-note">Recent punch activities</div>
       </div>
-    </div>
+      
+      <table className="punch-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {punchHistory.length === 0 ? (
+            <tr>
+              <td className="muted" colSpan="3">No punches yet</td>
+            </tr>
+          ) : (
+            punchHistory.slice(-8).reverse().map(punch => (
+              <tr key={punch.id}>
+                <td>{getHumanType(punch.type)}</td>
+                <td>{formatTimeShort(punch.time)}</td>
+                <td className="muted">Completed</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      </div>
   )
 }
